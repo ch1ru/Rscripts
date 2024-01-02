@@ -1,7 +1,12 @@
 ---
-title: "Trajectory analysis"
+title: "Cluster analysis of PBMC (Peripheral blood mononuclear cells)"
 output: html_notebook
 ---
+
+# Unpack data
+```{bash} 
+tar -xvzf data/pbmc3k_filtered_gene_bc_matrices.tar.gz -C ./data
+```
 
 # Setup Seurat object
 ```{R}
