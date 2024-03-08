@@ -26,3 +26,104 @@ Then, the only thing to do is to align the reads with those C->T conversions and
 measurements for DNA methylation.
 
 See https://compgenomr.github.io/book/what-is-dna-methylation.html
+
+## Install methylKit if not already
+```{R}
+BiocManager::install("methylKit")
+```
+
+## Import libraries
+```{R}
+library(methylKit)
+```
+
+```{R}
+file.list=list(
+system.file("extdata", "test1.myCpG.txt", package = "methylKit"),
+system.file("extdata", "test2.myCpG.txt", package = "methylKit"),
+system.file("extdata", "control1.myCpG.txt", package = "methylKit"),
+system.file("extdata", "control2.myCpG.txt", package = "methylKit")
+)
+
+
+myobj=methRead(file.list,
+           sample.id=list("test1","test2","ctrl1","ctrl2"),
+           assembly="hg18",
+           treatment=c(1,1,0,0),
+           context="CpG"
+           )
+
+```
+
+```{R}
+length(myobj)
+head(myobj[[1]])
+```
+```{R}
+getMethylationStats(myobj[[2]],plot=TRUE,both.strands=FALSE)
+```
+
+```{R}
+getCoverageStats(myobj[[2]],plot=TRUE,both.strands=FALSE)
+```
+
+## Filter samples based on coverage
+```{R}
+filtered.myobj=filterByCoverage(myobj,lo.count=10,lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=99.9)
+```
+
+## Merging samples into a single table
+```{R}
+meth=methylKit::unite(myobj, destrand=FALSE)
+head(meth)
+
+# creates a methylBase object, 
+# where only CpGs covered with at least 1 sample per group will be returned
+
+# there were two groups defined by the treatment vector, 
+# given during the creation of myobj: treatment=c(1,1,0,0)
+# meth.min=unite(myobj,min.per.group=1L)
+```
+
+## Filtering CpGs
+We might need to filter the CpGs further before exploratory analysis or even before the downstream analysis such as differential methylation. 
+For exploratory analysis, it is of general interest to see how samples relate to each other and we might want to remove CpGs that are not variable 
+before doing that. Or we might remove Cs that are potentially C->T mutations. First, we show how to filter based on variation. Below, we extract 
+percent methylation values from CpGs as a matrix. Calculate the standard deviation for each CpG and filter based on standard deviation. 
+
+```{R}
+pm=percMethylation(meth) # get percent methylation matrix
+mds=matrixStats::rowSds(pm) # calculate standard deviation of CpGs
+head(meth[mds>20,])
+hist(mds,col="cornflowerblue",xlab="Std. dev. per CpG")
+```
+
+Now, let’s assume we know the locations of C->T mutations. These locations should be removed from the analysis as they do not represent 
+bisulfite-treatment-associated conversions. Mutation locations are stored in a GRanges object, and we can use that to remove CpGs overlapping 
+with mutations. In order to do the overlap operation, we will convert the methylKit object to a GRanges object and do the filtering with the 
+%over% function within [ ]. The returned object will still be a methylKit object.
+
+```{R}
+library(GenomicRanges)
+# example SNP
+mut=GRanges(seqnames=c("chr21","chr21"),
+            ranges=IRanges(start=c(9853296, 9853326),
+                           end=c( 9853296,9853326)))
+
+# select CpGs that do not overlap with mutations
+sub.meth=meth[! as(meth,"GRanges") %over% mut,]
+paste("nrow meth", nrow(meth))
+paste("nrow sub.meth", nrow(sub.meth))
+```
+
+## Dendrogram
+```{R}
+clusterSamples(meth, dist="correlation", method="ward", plot=TRUE)
+```
+## PCA
+```{R}
+PCASamples(meth, screeplot=TRUE)
+pc=PCASamples(meth,obj.return = TRUE, adj.lim=c(1,1))
+```
+
