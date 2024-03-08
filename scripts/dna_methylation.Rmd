@@ -12,3 +12,5 @@ CpG islands in the human genome (Smith and Meissner 2013). It has been demonstra
 density. In vertebrate genomes, cytosine bases are usually unmethylated in CpG-rich regions such as CpG islands and tend to be methylated in CpG-deficient regions. Vertebrate genomes are 
 largely CpG deficient except at CpG islands. Conversely, invertebrates such as Drosophila melanogaster and Caenorhabditis elegans do not exhibit cytosine methylation and consequently do not 
 have CpG rich and poor regions but rather a steady CpG frequency over their genomes (Deaton and Bird 2011).
+
+See https://compgenomr.github.io/book/what-is-dna-methylation.html
