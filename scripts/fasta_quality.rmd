@@ -1,0 +1,47 @@
+---
+title: "Calculate quality scores of fasta/fastq files"
+output: html_notebook
+---
+
+# TODO: Complete for fastq format
+
+# Load files into rqc function
+```{R}
+library(Rqc)
+folder = system.file(package="ShortRead", "extdata/E-MTAB-1147")
+
+# feeds fastq.qz files in "folder" to quality check function
+qcRes=rqc(path = folder, pattern = ".fastq.gz", openBrowser=FALSE)
+```
+
+# Sequence quality per base/cycle
+
+```{R}
+rqcCycleQualityBoxPlot(qcRes)
+```
+
+# Per base sequence content
+
+```{R}
+rqcCycleBaseCallsLinePlot(qcRes)
+```
+
+# Frequency plot
+
+```{R}
+rqcReadFrequencyPlot(qcRes)
+```
+
+# FastQC
+
+```{R}
+library(fastqcr)
+
+fastqc_install()
+
+fastqc(fq.dir = folder,qc.dir = "fastqc_results")
+
+qc_report(qc.path="fastqc_results", 
+          result.file="reportFile", preview = TRUE)
+```
+
