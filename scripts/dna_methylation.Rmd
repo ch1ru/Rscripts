@@ -20,4 +20,9 @@ for catalyzed active DNA demethylation (Tahiliani, Koh, Shen, et al. 2009). Iter
 mark is excised from DNA by G/T mismatch-specific thymine-DNA glycosylase (TDG), which as a result reverts cytosine residue to its unmodified state (He, Li, Li, et al. 2011). Apart from these, 
 mainly bacteria, but possibly higher eukaryotes, contain base modifications on bases other than cytosine, such as methylated adenine or guanine (Clark, Spittle, Turner, et al. 2011).
 
+# Bisulfite sequencing
+This method, and the related ones, allow measurement of DNA methylation at the single nucleotide resolution. The bisulfite conversion turns unmethylated Cs to Ts and methylated Cs remain intact. 
+Then, the only thing to do is to align the reads with those C->T conversions and count C->T mutations to calculate fraction of methylated bases. In the end, we can get quantitative genome-wide 
+measurements for DNA methylation.
+
 See https://compgenomr.github.io/book/what-is-dna-methylation.html
